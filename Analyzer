@@ -1,0 +1,253 @@
+/**
+ * Project 1
+ * Chris Hranj
+ * The analyzer contains a scanner which will read
+ * input from a text file, and turn each item into a
+ * Response object, specifically an ErrorResponse, or 
+ * SuccessResponse. These items will be placed into an
+ * array which will then perform various counts and 
+ * percentage calculations and output them.
+ */
+ 
+import java.io.*;
+import java.util.Scanner;
+import java.text.NumberFormat;
+import java.text.DecimalFormat;
+
+public class Analyzer
+{
+  	private final int ARRAYSIZE = 40000;
+		Response array[] = new Response[ARRAYSIZE];
+		
+		Scanner fileScan;
+		private int arrPosition = 0;
+			
+	//counting variables
+		private int totalRequests = 1;
+		private int totalGET = 0;
+		private int totalPOST = 0;
+		private long totalBytes = 0;
+		private int totalWindows = 0;
+		private int totalMozilla = 0;
+		private int totalGooglebot = 0;
+		private int totalBad = 0;
+	//status counting variables
+		private int num1x = 0;
+		private int num2x = 0;
+		private int num3x = 0;
+		private int num4x = 0;
+		private int num5x = 0;
+
+	//percent variables
+		private double num1Percent;
+		private double num2Percent;
+		private double num3Percent;
+		private double num4Percent;
+		private double num5Percent;
+	
+		private double percentWindows;
+   		private double percentBad;
+  		private double percentMozilla;
+    		private double percentGoogle;
+		
+	//variables to build Response object
+		private String IP;
+		private String dateTime;
+		private String requestType;
+		private int responseCode;
+		private int bytes;
+		String userAgentAndRef;
+		
+    public Analyzer() 
+    {
+    	
+    }
+    /**
+     * The start method creates a scanner and uses
+     * it to read through the web access data, and 
+     * create Response objects using that data.
+     */
+    public void start() throws IOException
+    {
+    	fileScan = new Scanner (new File("access_test"));
+	while(fileScan.hasNext())
+    	{	
+    		IP = fileScan.next();
+		//System.out.println(IP);
+    		fileScan.next(); //garbage line
+    		fileScan.next(); //garbage line
+    		dateTime = fileScan.next() + " " + fileScan.next();
+		//System.out.println(dateTime);
+		String temp = fileScan.next();
+		requestType = temp.substring(1);
+    	//	System.out.println(requestType);
+    		
+    		fileScan.next(); //garbage line
+
+		responseCode = 0;
+		while(responseCode ==0)
+		{
+			if(fileScan.hasNextInt())
+				responseCode = fileScan.nextInt();
+			else
+				fileScan.next(); //garbage line
+			
+		}
+    	//	System.out.println(responseCode);
+
+		bytes = 0;
+		if(responseCode < 300)
+			if(fileScan.hasNextInt())
+				bytes= fileScan.nextInt();
+			else
+				fileScan.next(); //garbage line
+		
+		//System.out.println(bytes);
+		userAgentAndRef = fileScan.nextLine();
+		//System.out.println(userAgentAndRef);
+		
+		if(responseCode < 400){
+			buildSuccess(requestType, responseCode, bytes, userAgentAndRef, IP, dateTime);
+			//System.out.println("SUCCESS TEST!!");
+		}
+ 		else{
+			buildError(requestType, responseCode, bytes, userAgentAndRef);
+			//System.out.println("ERROR TEST");
+		}
+	}	
+	
+	
+	count();
+    }
+    
+
+	public void buildSuccess(String requestType, int responseCode, int bytes, String userAgentAndRef, String IP, String dateTime)
+	{
+		SuccessResponse rsp = new SuccessResponse(requestType, responseCode, bytes, userAgentAndRef, IP, dateTime);
+			if(array[arrPosition] == null)
+			{
+				//array[arrPosition] = rsp;
+				arrPosition++;
+			}	
+				
+		//System.out.println(rsp.toString());
+	}
+
+	public void buildError(String requestType, int responseCode, int bytes, String userAgentAndRef)
+	{
+		ErrorResponse err = new ErrorResponse(requestType, responseCode, bytes, userAgentAndRef);
+			if(array[arrPosition] == null)
+			{
+				//array[arrPosition] = err;
+				arrPosition++;
+			}	
+		//System.out.println(err.toString());
+	}
+    /**
+     * The count method will cycle through
+     * the filled array and use accessor methods
+     * to tally various information for output.
+     */
+
+    public void count()
+    {
+    	for(int index = 0; index < ARRAYSIZE; index++)
+    	{
+    		while(array[index] != null)
+    		{
+			
+    			totalRequests++;
+    			totalBytes += array[index].getBytes(); 
+
+    			if(array[index] instanceof ErrorResponse)
+    				totalBad++;
+    			
+    			//count different type of responses
+    			if(array[index].getResponse() >= 100 && array[index].getResponse() < 200)
+    				num1x++;
+    			else if(array[index].getResponse() >= 200 && array[index].getResponse() < 300)
+    				num2x++;
+    			else if(array[index].getResponse() >= 300 && array[index].getResponse() < 300)
+    				num3x++;
+    			else if(array[index].getResponse() >= 400 && array[index].getResponse() < 300)
+    				num4x++;
+    			else
+    				num5x++;
+
+			if(array[index].getRequestType() == "POST")
+				totalPOST++;
+			if(array[index].getRequestType() == "GET")
+				totalGET++;
+
+
+			if(array[index].isWindows())
+				totalWindows++;
+			if(array[index].isMozilla())
+				totalMozilla++;
+			if(array[index].isGoogle())
+				totalGooglebot++;
+    		}
+    	}
+    	
+    	calculate();
+    }
+    /**
+     * Calculate will determine the percent values
+     * of various information regarding the array.
+     */
+    public void calculate()
+    {
+    	num1Percent = num1x/totalRequests;
+    	num2Percent = num2x/totalRequests;
+    	num3Percent = num3x/totalRequests;
+    	num4Percent = num4x/totalRequests;
+    	num5Percent = num5x/totalRequests;
+    	
+    	percentWindows = totalWindows/totalRequests;
+    	percentBad = totalBad/totalRequests;
+    	percentMozilla = totalMozilla/totalRequests;
+    	percentGoogle = totalGooglebot/totalRequests;
+
+    	output();
+    }
+    /**
+     * Output will write out all of the
+     * information regarding the array to a file name apacheOut.txt.
+     */
+    public void output()
+    {
+    	DecimalFormat numFormat = new DecimalFormat("#,###"); //used to format numbers with commas
+	NumberFormat percentFormat = NumberFormat.getPercentInstance();
+			percentFormat.setMinimumFractionDigits(2);
+
+	try
+    	{
+    	
+    	FileWriter fstream = new FileWriter("apacheOut.txt");
+  	BufferedWriter out = new BufferedWriter(fstream);
+  		out.write("Christopher Hranj's Results" + "\n" + 
+			"==========================" + "\n" +
+    			"The total number of requests in the file: " + numFormat.format(totalRequests) + "\n" + 
+    			"The total number of GET requests: " + numFormat.format(totalGET) + "\n" + 
+    			"The total number of POST requests: " + numFormat.format(totalPOST) + "\n" + 
+    			"The total number of bytes served: " + numFormat.format(totalBytes) + "\n" + 
+    			"The number and percentage of pages producing various status categoriaztions: "  + "\n" + 
+    			"\t1xx Informational: " + numFormat.format(num1x) + "(" + percentFormat.format(num1Percent) + ")" + "\n" + 
+    			"\t2xx Status: " + numFormat.format(num2x) + "(" + percentFormat.format(num2Percent) + ")" + "\n" +
+    			"\t3xx Redirection: " + numFormat.format(num3x) + "(" + percentFormat.format(num3Percent) + ")" + "\n" +
+    			"\t4xx Client Error: " + numFormat.format(num4x) + "(" + percentFormat.format(num4Percent) + ")" + "\n" +
+    			"\t5xx Server Error: " + numFormat.format(num5x) + "(" + percentFormat.format(num5Percent) + ")" + "\n" +
+    			"The percentage and number of Windows-based clients: " + percentFormat.format(percentWindows) + "(" + numFormat.format(totalWindows) + ")" + "\n" +
+    			"The percentage and number of bad requests: " + percentFormat.format(percentBad) + "(" + numFormat.format(totalBad) + ")" + "\n" +
+    			"The percentage and number of clients that are Mozilla-based: " + percentFormat.format(percentMozilla) + "(" + numFormat.format(totalMozilla) + ")" + "\n" +
+    			"The percentage and number of requests from the Googlebot: " + percentFormat.format(percentGoogle) + "(" + numFormat.format(totalGooglebot) + ")" + "\n");
+    		
+    		out.close(); //end the fileWriter
+    	}
+  		catch (Exception e)
+  		{
+			System.err.println(e.getMessage());
+  		}
+    }
+    
+}
