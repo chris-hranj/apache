@@ -1,0 +1,14 @@
+/**
+ * Project 1
+ * Chris Hranj
+ * SuccessResponse objects extend Response
+ * and represent data for an unsuccessful attempt
+ * at accessing the web server.
+ */
+public class ErrorResponse extends Response
+{
+    public ErrorResponse(String requestType, int responseCode,int numBytes, String userAgentAndRef)
+    {
+      super(requestType, responseCode, numBytes, userAgentAndRef);
+    }
+}
