@@ -1,0 +1,17 @@
+/**
+ * Project 1
+ * Chris Hranj
+ * This driver class contains the main method
+ * and simply initializes an Analyzer object.
+ */
+import java.util.Scanner;
+import java.io.*;
+public class Driver
+{
+  public static void main(String[] args) throws IOException
+	{
+		Analyzer analyzer = new Analyzer();
+		analyzer.start();
+		System.exit(0);
+	}
+}
