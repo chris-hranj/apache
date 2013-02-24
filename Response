@@ -1,0 +1,70 @@
+/**
+ * Project 1
+ * Chris Hranj
+ * Response objects are abstract
+ * and broken up into success and 
+ * error responses. Each response 
+ * contains various information 
+ * regarding one attempt at accessing
+ * an apache web server. Access methods
+ * are provided for essential information.
+ */
+public class Response {
+  
+	protected String requestType = "";
+	protected int responseCode;
+	protected int numBytes = 0;
+	protected String userAgentAndRef = "";
+	
+	public Response(String requestType, int responseCode,int numBytes, String userAgentAndRef)
+	{
+		this.requestType = requestType;
+		this.responseCode = responseCode;
+		this.numBytes = numBytes;
+		this.userAgentAndRef = userAgentAndRef;
+	}
+	
+	public String getRequestType()
+	{
+		return requestType;
+	}
+	
+	public int getBytes()
+	{
+		return numBytes;
+	}
+	
+	public int getResponse()
+	{
+		return responseCode;
+	}
+	
+	public boolean isWindows()
+	{
+		if(userAgentAndRef.contains("Windows"))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isMozilla()
+	{
+		if(userAgentAndRef.contains("Mozilla"))
+			return true;
+		else
+			return false;
+	}
+	
+	public boolean isGoogle()
+	{
+		if(userAgentAndRef.contains("Googlebot"))
+			return true;
+		else
+			return false;
+	}
+	
+	public String toString()
+	{
+		return("Number of bytes:" + numBytes + "\nRequest type: " + requestType + "\nResponse Code: " + responseCode + "\nURL and User Agent: " + userAgentAndRef);
+	}
+}
