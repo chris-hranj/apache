@@ -1,0 +1,21 @@
+<project name="Project1" default="compile">
+  <target name="compile">
+    <javac srcdir="." /> 
+    </target>
+  <target name="clean">
+    <delete>
+      <fileset dir="." includes="**/*.class" /> 
+    </delete>
+    <delete file="apacheOut.txt" /> 
+    </target>
+  <target name="run" depends="compile">
+    <java classname="Driver" /> 
+    </target>
+  <target name="jar">
+    <jar jarfile="hranjc1.jar" basedir=".">
+      <manifest>
+        <attribute name="Built-By" value="Chris Hranj" /> 
+        </manifest>
+    </jar>
+    </target>
+</project>
