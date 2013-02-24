@@ -1,0 +1,26 @@
+/**
+ * Project 1
+ * Chris Hranj
+ * SuccessResponse objects extend Response and
+ * represent data for a successful attempt
+ * at accessing the web server, They also 
+ * contain additional information.
+ */
+public class SuccessResponse extends Response
+{
+
+  protected String ipAddress = "";
+	protected String dateTime = "";
+
+    public SuccessResponse(String requestType, int responseCode,int numBytes, String userAgentAndRef, String ipAddress, String dateTime)
+    {
+    	super(requestType, responseCode, numBytes, userAgentAndRef);
+    	this.ipAddress = ipAddress;
+    	this.dateTime = dateTime;
+    }
+    
+    public String toString()
+	{
+		return(super.toString() + "\nIP Address: " + ipAddress + "\nDate and Time accessed: " + dateTime);
+	}
+}
